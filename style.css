@@ -47,6 +47,7 @@ input {
 	outline: none;
 	background: transparent;
 	padding: 10px;
+	font-size: 14px;
 }
 
 button {
@@ -123,8 +124,13 @@ ul li span {
 	line-height: 40px;
 	text-align: center;
 	border-radius: 50%;
+	user-select: none;
 }
 ul li span:hover {
 	color: #fc4759;
 	cursor: pointer;
+}
+
+.drag-item {
+	cursor: move;
 }
