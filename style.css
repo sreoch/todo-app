@@ -8,7 +8,7 @@
 .container {
 	width: 100%;
 	min-height: 100vh;
-	background: #c2a0e8;
+	background: #ded7fa;
 	padding: 10px;
 }
 
@@ -61,11 +61,45 @@ button {
 }
 
 #list-container {
-	width: 100%;
 	max-width: 840px;
 	background: #fff;
 	margin: 50px auto 20px;
 	padding: 40px 30px 70px;
 	border-radius: 10px;
 	border: 1px solid;
+	display: flex;
+	list-style: none;
+	place-items: center;
+	flex-direction: column;
+	gap: 1rem;
+	font-size: 18px;
+}
+
+ul li {
+	position: relative;
+	width: 40rem;
+	text-align: center;
+	/* color: $color-list; */
+	border-radius: 3rem;
+	background: #ded7fa;
+	padding: 1.1rem 1.5rem 1.1rem 1.5rem;
+	/* counter-increment: my-counter;
+
+	&::before {
+		content: counter(my-counter) '. ';
+	} */
+}
+
+ul li span {
+	position: absolute;
+	right: 20px;
+	font-size: 22px;
+	color: #c2a0e8;
+	line-height: 40px;
+	text-align: center;
+	border-radius: 50%;
+}
+ul li span:hover {
+	color: #fc4759;
+	cursor: pointer;
 }
