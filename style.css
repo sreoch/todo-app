@@ -78,7 +78,6 @@ button {
 ul li {
 	position: relative;
 	width: 40rem;
-	text-align: center;
 	/* color: $color-list; */
 	border-radius: 3rem;
 	background: #ded7fa;
@@ -88,6 +87,32 @@ ul li {
 	&::before {
 		content: counter(my-counter) '. ';
 	} */
+}
+
+ul li::before {
+	content: '';
+	position: absolute;
+	height: 28px;
+	width: 28px;
+	border-radius: 50%;
+	background-image: url(images/unchecked.png);
+	background-size: cover;
+	background-position: center;
+	top: 14px;
+	left: -40px;
+}
+
+ul li.checked {
+	color: #555;
+	text-decoration: line-through;
+	background: #c5a1d4;
+}
+ul li.checked span {
+	color: #ddceed;
+}
+
+ul li.checked::before {
+	background-image: url(images/checked.png);
 }
 
 ul li span {
