@@ -42,6 +42,7 @@
 }
 
 input {
+	font-family: 'Fira Sans', sans-serif;
 	flex: 1;
 	border: none;
 	outline: none;
@@ -61,6 +62,33 @@ button {
 	border-radius: 40px;
 }
 
+#summary-container {
+	position: absolute;
+	top: 340px;
+	right: 70px;
+	height: 179px;
+	width: 100%;
+	max-width: 400px;
+	background: #fff;
+	padding: 40px 30px 20px;
+	border-radius: 10px;
+	border: 1px solid;
+}
+
+#summary-container h2 {
+	position: absolute;
+	top: 10px;
+	font-family: 'Josefin Sans', sans-serif;
+	font-weight: 500;
+	text-decoration: underline;
+}
+
+#summary-container div {
+	font-family: 'Fira Sans', sans-serif;
+	font-size: 20px;
+	font-weight: 500;
+}
+
 #list-container {
 	max-width: 840px;
 	background: #fff;
@@ -77,6 +105,8 @@ button {
 }
 
 ul li {
+	font-family: 'Fira Sans', sans-serif;
+	font-weight: 500;
 	position: relative;
 	width: 40rem;
 	/* color: $color-list; */
