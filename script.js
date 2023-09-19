@@ -24,8 +24,8 @@ function addTask() {
 // Get number of children elements in list
 
 function getTaskCount() {
-	const tasks = listContainer.querySelectorAll(`:not(.checked)`); //query selector to get the elements that ARENT checked
-	const taskCount = tasks.length; //get length of the list without the checked ones
+	const tasks = listContainer.querySelectorAll(`:not(.checked)`);
+	const taskCount = tasks.length;
 	console.log(tasks);
 	const div = document.createElement('div');
 	div.className = 'tasks-remaining';
@@ -86,6 +86,6 @@ function saveData() {
 function showTask() {
 	listContainer.innerHTML = localStorage.getItem('data');
 }
-
-showTask();
 getTaskCount();
+getCheckedTasks();
+showTask();
