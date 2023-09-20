@@ -7,6 +7,7 @@ function addTask() {
 	if (inputBox.value === '') {
 		alert('You must have something to do!');
 	} else {
+		console.log('Adding task');
 		let li = document.createElement('li');
 		li.innerHTML = inputBox.value;
 		li.className = 'drag-item';
@@ -15,18 +16,32 @@ function addTask() {
 		span.className = 'material-symbols-outlined';
 		span.innerHTML = 'Delete';
 		li.appendChild(span);
+
+		// Call getTaskCount after adding the task
+		getTaskCount();
 	}
 	inputBox.value = '';
 	saveData();
-	getTaskCount();
 }
+
+// Check or remove tasks
+listContainer.addEventListener('click', function (e) {
+	if (e.target.tagName === 'LI') {
+		e.target.classList.toggle('checked');
+	} else if (e.target.tagName === 'SPAN') {
+		e.target.parentElement.remove();
+	}
+	saveData();
+	getTaskCount(); // Call getTaskCount only once after the action (either LI or SPAN)
+	getCheckedTasks();
+});
 
 // Get number of children elements in list
 
 function getTaskCount() {
-	const tasks = listContainer.querySelectorAll(`:not(.checked)`);
-	const taskCount = tasks.length;
+	const tasks = listContainer.querySelectorAll(`li:not(.checked)`);
 	console.log(tasks);
+	const taskCount = tasks.length;
 	const div = document.createElement('div');
 	div.className = 'tasks-remaining';
 	div.innerHTML = `Tasks remaining: ${taskCount}`;
@@ -36,27 +51,13 @@ function getTaskCount() {
 
 	if (existingDiv) {
 		// If it exists, update its content
+		console.log(taskCount);
 		existingDiv.innerHTML = `Tasks remaining: ${taskCount}`;
 	} else {
 		// If it doesn't exist, append the new div
 		summaryContainer.appendChild(div);
 	}
 }
-
-// Check or remove tasks
-listContainer.addEventListener('click', function (e) {
-	if (e.target.tagName === 'LI') {
-		e.target.classList.toggle('checked');
-		saveData();
-		getTaskCount();
-		getCheckedTasks();
-	} else if (e.target.tagName === 'SPAN') {
-		e.target.parentElement.remove();
-		saveData();
-		getTaskCount();
-		getCheckedTasks();
-	}
-});
 
 // Get amount of checked tasks
 function getCheckedTasks() {
@@ -80,12 +81,28 @@ function getCheckedTasks() {
 
 // Storing data so it's stored on refresh/restart
 function saveData() {
-	localStorage.setItem('data', listContainer.innerHTML);
+	const tasks = listContainer.querySelectorAll('li');
+	const checkedTasks = listContainer.querySelectorAll('li.checked');
+
+	const data = {
+		taskCount: tasks.length,
+		checkedTaskCount: checkedTasks.length,
+		tasksHTML: listContainer.innerHTML,
+	};
+
+	localStorage.setItem('data', JSON.stringify(data));
 }
 
 function showTask() {
-	listContainer.innerHTML = localStorage.getItem('data');
+	const savedData = JSON.parse(localStorage.getItem('data'));
+
+	if (savedData) {
+		listContainer.innerHTML = savedData.tasksHTML;
+		getTaskCount(); // Update task count
+		getCheckedTasks(); // Update checked task count
+	}
 }
+
 getTaskCount();
 getCheckedTasks();
 showTask();
