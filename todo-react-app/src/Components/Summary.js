@@ -1,4 +1,4 @@
-export const Summary = () => {
+export const Summary = ({ taskCount, checkedCount }) => {
 	return (
 		<div id='summary-container'>
 			<h2>Summary</h2>
