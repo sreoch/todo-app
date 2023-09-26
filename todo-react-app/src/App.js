@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import { TaskInput } from './Components/TaskInput';
 import { TaskList } from './Components/TaskList';
 import { Summary } from './Components/Summary';
+import { DragDropContext } from 'react-beautiful-dnd';
 
 function App() {
 	const [tasks, setTasks] = useState([]);
 	const [taskText, setTaskText] = useState('');
 	const [checkedCount, setCheckedCount] = useState(0);
 	const [taskCount, setTaskCount] = useState(0);
+	const [draggedItem, setDraggedItem] = useState(null); // Add draggedItem state
 
 	const addTask = (newTaskText) => {
 		const newTask = {
@@ -54,24 +56,37 @@ function App() {
 		getCheckedTaskCount(updatedTasks);
 	};
 
+	const onDragEnd = (result) => {
+		if (!result.destination) {
+			return; // Dropped outside the list
+		}
+
+		const reorderedTasks = [...tasks];
+		const [movedTask] = reorderedTasks.splice(result.source.index, 1);
+		reorderedTasks.splice(result.destination.index, 0, movedTask);
+
+		setTasks(reorderedTasks);
+	};
+
+	const saveTasksToLocalStorage = (tasks) => {
+		localStorage.setItem('tasks', JSON.stringify(tasks));
+	};
+
 	return (
-		<div className='container'>
-			<div className='todo-container'>
-				<h2>Agenda</h2>
-				<TaskInput
-					addTask={addTask}
-					taskText={taskText}
-					setTaskText={setTaskText}
-				/>
+		<DragDropContext onDragEnd={onDragEnd}>
+			<div className='container'>
+				<div className='todo-container'>
+					<h2>Agenda</h2>
+					<TaskInput
+						addTask={addTask}
+						taskText={taskText}
+						setTaskText={setTaskText}
+					/>
+				</div>
+				<Summary taskCount={taskCount} checkedCount={checkedCount} />
+				<TaskList tasks={tasks} checkTask={checkTask} deleteTask={deleteTask} />
 			</div>
-			<Summary taskCount={taskCount} checkedCount={checkedCount} />
-			<TaskList
-				tasks={tasks}
-				// checkedTasks={checkedTasks}
-				checkTask={checkTask}
-				deleteTask={deleteTask}
-			/>
-		</div>
+		</DragDropContext>
 	);
 }
 

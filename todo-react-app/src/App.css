@@ -89,7 +89,7 @@ button {
 	font-weight: 500;
 }
 
-#list-container {
+.list-container {
 	max-width: 840px;
 	background: #fff;
 	margin: 50px auto 20px;
