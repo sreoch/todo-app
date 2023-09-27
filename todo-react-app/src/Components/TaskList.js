@@ -21,8 +21,8 @@ export const TaskList = ({ tasks, checkedTasks, checkTask, deleteTask }) => {
 								return (
 									<TaskItem
 										key={task.id.toString()}
-										text={task.text}
-										checked={task.checked}
+										text={task.item.todo}
+										checked={task.item.checked}
 										onCheck={() => checkTask(task.id)}
 										onDelete={() => deleteTask(task.id)}
 										provided={provided}

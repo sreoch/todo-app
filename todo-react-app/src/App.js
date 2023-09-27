@@ -4,7 +4,21 @@ import { TaskInput } from './Components/TaskInput';
 import { TaskList } from './Components/TaskList';
 import { Summary } from './Components/Summary';
 import { DragDropContext } from 'react-beautiful-dnd';
+import { db } from './firebase.js';
+import {
+	collection,
+	query,
+	orderBy,
+	onSnapshot,
+	addDoc,
+	serverTimestamp,
+	deleteDoc,
+	doc,
+	updateDoc,
+	getDoc,
+} from 'firebase/firestore';
 
+const q = query(collection(db, 'todos'), orderBy('timestamp', 'desc'));
 function App() {
 	const [tasks, setTasks] = useState([]);
 	const [taskText, setTaskText] = useState('');
@@ -12,48 +26,98 @@ function App() {
 	const [taskCount, setTaskCount] = useState(0);
 	const [draggedItem, setDraggedItem] = useState(null); // Add draggedItem state
 
-	const addTask = (newTaskText) => {
-		const newTask = {
-			text: newTaskText,
-			id: Date.now(),
-			checked: false,
-		};
-		setTasks((prevTasks) => {
-			const updatedTasks = [...prevTasks, newTask];
-			getTaskCount(updatedTasks);
-			getCheckedTaskCount(updatedTasks);
-			return updatedTasks;
+	useEffect(() => {
+		onSnapshot(q, (snapshot) => {
+			const tasksFromFirebase = snapshot.docs.map((doc) => ({
+				id: doc.id,
+				item: doc.data(),
+			}));
+
+			setTasks(tasksFromFirebase);
+
+			// Calculate and set taskCount and checkedCount
+			getTaskCount(tasksFromFirebase);
+			getCheckedTaskCount(tasksFromFirebase);
 		});
+	}, [taskText]);
+
+	const addTask = (newTaskText) => {
+		addDoc(collection(db, 'todos'), {
+			todo: newTaskText,
+			timestamp: serverTimestamp(),
+			checked: false, // Add the checked field with an initial value
+		})
+			.then((docRef) => {
+				// After successfully adding the task to Firebase, update the state with the new task
+				const newTask = {
+					id: docRef.id,
+					item: {
+						todo: newTaskText,
+						timestamp: serverTimestamp(),
+						checked: false, // Initialize it as false
+					},
+				};
+
+				setTasks((prevTasks) => [...prevTasks, newTask]);
+			})
+			.catch((error) => {
+				console.error('Error adding task: ', error);
+			});
 	};
 
 	const getTaskCount = (tasksArray) => {
-		const tasks = tasksArray.filter((task) => !task.checked);
+		const tasks = tasksArray.filter((task) => !task.item.checked);
 		const taskCount = tasks.length;
 		setTaskCount(taskCount);
 	};
 
 	const getCheckedTaskCount = (tasksArray) => {
-		const checkedTasks = tasksArray.filter((task) => task.checked);
+		const checkedTasks = tasksArray.filter((task) => task.item.checked);
 		const checkedTaskCount = checkedTasks.length;
 		setCheckedCount(checkedTaskCount);
 	};
 
 	const deleteTask = (taskId) => {
-		const updatedTasks = tasks.filter((task) => task.id !== taskId);
-		setTasks(updatedTasks);
-		getTaskCount(updatedTasks);
-		getCheckedTaskCount(updatedTasks);
+		// Delete the task from Firestore
+		const taskRef = doc(db, 'todos', taskId);
+
+		deleteDoc(taskRef)
+			.then(() => {})
+			.catch((error) => {
+				console.error('Error deleting task: ', error);
+				// Handle any errors or show error messages to the user
+			});
 	};
 
 	const checkTask = (taskId) => {
-		const updatedTasks = tasks.map((task) =>
-			task.id === taskId
-				? { ...task, checked: !task.checked } // Toggle the 'checked' property
-				: task
-		);
-		setTasks(updatedTasks);
-		getTaskCount(updatedTasks);
-		getCheckedTaskCount(updatedTasks);
+		const taskRef = doc(db, 'todos', taskId);
+
+		// Toggle the "checked" field by setting it to the opposite value
+		const newChecked = !tasks.find((task) => task.id === taskId).item.checked;
+
+		updateDoc(taskRef, {
+			checked: newChecked,
+		})
+			.then(() => {
+				// Update the state to reflect the change in checked value
+				setTasks((prevTasks) =>
+					prevTasks.map((task) =>
+						task.id === taskId
+							? {
+									...task,
+									item: {
+										...task.item,
+										checked: newChecked,
+									},
+							  }
+							: task
+					)
+				);
+			})
+			.catch((error) => {
+				console.error('Error updating task: ', error);
+				// Handle any errors or show error messages to the user
+			});
 	};
 
 	const onDragEnd = (result) => {
@@ -66,10 +130,6 @@ function App() {
 		reorderedTasks.splice(result.destination.index, 0, movedTask);
 
 		setTasks(reorderedTasks);
-	};
-
-	const saveTasksToLocalStorage = (tasks) => {
-		localStorage.setItem('tasks', JSON.stringify(tasks));
 	};
 
 	return (
