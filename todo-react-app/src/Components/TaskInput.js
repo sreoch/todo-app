@@ -1,7 +1,4 @@
-import { useState } from 'react';
-
 export const TaskInput = ({ addTask, taskText, setTaskText }) => {
-
 	const handleInputChange = (e) => {
 		setTaskText(e.target.value);
 	};

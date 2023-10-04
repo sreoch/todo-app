@@ -15,7 +15,6 @@ import {
 	deleteDoc,
 	doc,
 	updateDoc,
-	getDoc,
 } from 'firebase/firestore';
 
 const q = query(collection(db, 'todos'), orderBy('timestamp', 'desc'));
@@ -24,7 +23,6 @@ function App() {
 	const [taskText, setTaskText] = useState('');
 	const [checkedCount, setCheckedCount] = useState(0);
 	const [taskCount, setTaskCount] = useState(0);
-	const [draggedItem, setDraggedItem] = useState(null); // Add draggedItem state
 
 	useEffect(() => {
 		onSnapshot(q, (snapshot) => {
