@@ -141,8 +141,14 @@ function App() {
 						setTaskText={setTaskText}
 					/>
 				</div>
-				<Summary taskCount={taskCount} checkedCount={checkedCount} />
-				<TaskList tasks={tasks} checkTask={checkTask} deleteTask={deleteTask} />
+				<div className='summary-tasklist-container'>
+					<Summary taskCount={taskCount} checkedCount={checkedCount} />
+					<TaskList
+						tasks={tasks}
+						checkTask={checkTask}
+						deleteTask={deleteTask}
+					/>
+				</div>
 			</div>
 		</DragDropContext>
 	);
